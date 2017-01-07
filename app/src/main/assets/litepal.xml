@@ -1,0 +1,9 @@
+<litepal>
+    <dbname value="yuweatherdb"/>
+    <version value="1"/>
+    <list>
+        <mapping class="com.example.zhuyu.yuweather.db.Province"/>
+        <mapping class="com.example.zhuyu.yuweather.db.City"/>
+        <mapping class="com.example.zhuyu.yuweather.db.county"/>
+    </list>
+</litepal>
