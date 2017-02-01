@@ -1,10 +1,12 @@
 package com.example.zhuyu.yuweather.db;
 
+import org.litepal.crud.DataSupport;
+
 /**
- * Created by Administrator on 2017/1/7 0007.
+ * Created by ZHUYU on 2017/1/31 0031.
  */
 
-public class county {
+public class County extends DataSupport{
     private int id;
     private String countyName;
     private String weatherId;
