@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#8000"
+    android:layout_margin="16dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="生活建议"
+        android:textSize="20sp"
+        android:textColor="@color/colorText"/>
+    <TextView
+        android:id="@+id/comfortText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="的卡号离开房间啊还浪开始的话费卡就是的"
+        android:textColor="@color/colorText"/>
+    <TextView
+        android:id="@+id/carwashText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="的卡号离开房间啊还浪开始的话费卡就是的"
+        android:textColor="@color/colorText"/>
+    <TextView
+        android:id="@+id/sportText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="的卡号离开房间啊还浪开始的话费卡就是的"
+        android:textColor="@color/colorText"/>
+
+</LinearLayout>

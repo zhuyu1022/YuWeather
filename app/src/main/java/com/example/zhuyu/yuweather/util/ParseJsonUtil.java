@@ -5,6 +5,9 @@ import android.util.Log;
 import com.example.zhuyu.yuweather.db.City;
 import com.example.zhuyu.yuweather.db.County;
 import com.example.zhuyu.yuweather.db.Province;
+import com.example.zhuyu.yuweather.gson.Weather;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,13 +30,14 @@ public class ParseJsonUtil {
                     p.setProvinceCode(provinceCode);
                     p.setProvinceName(provinceName);
                     p.save();//保存到数据库
+                    Log.d("Province", provinceName);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
     }
     public static  void parseJsontoCity(String JsonData,int provinceId){
-        Log.d("JsonData", JsonData);
+
         try {
             JSONArray jsonArray=new JSONArray(JsonData);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -57,17 +61,33 @@ public class ParseJsonUtil {
             JSONArray jsonArray=new JSONArray(JsonData);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject=jsonArray.getJSONObject(i);
-                String  weatherId=jsonObject.getString("id");
+                String  weatherId=jsonObject.getString("weather_id");
                 String countyName=jsonObject.getString("name");
+                Log.d("weatherid", weatherId);
                 County county=new County();
                 county.setWeatherId(weatherId);
                 county.setCountyName(countyName);
                 county.setCityId(cityId);
-                Log.d("ParseJsonUtil county", countyName);
                 county.save();
+                Log.d("county", countyName);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+    public static Weather parseJsontoWeather(String jsonData){
+        try {
+            JSONObject jsonObject=new JSONObject(jsonData);
+
+            JSONArray jsonArray=jsonObject.getJSONArray("HeWeather5");
+            String content=jsonArray.getJSONObject(0).toString();
+            Gson gson=new Gson();
+            Weather weather=new Weather();
+            weather=gson.fromJson(content,Weather.class);
+            return weather;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

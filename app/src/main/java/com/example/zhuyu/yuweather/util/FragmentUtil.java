@@ -17,11 +17,11 @@ import java.util.ArrayList;
  */
 
 public class FragmentUtil {
-    public static void replaceFragment(Fragment fragment, final AppCompatActivity activity){
+    public static void replaceFragment(Fragment fragment, final AppCompatActivity activity,int layoutId){
 
         final FragmentManager fragmentManager=activity.getSupportFragmentManager();//获取FragmentManager
         FragmentTransaction transaction=fragmentManager.beginTransaction();//开启事务
-        transaction.replace(R.id.areaFramelayout,fragment);//将fragment实例添加到指定容器中
+        transaction.replace(layoutId,fragment);//将fragment实例添加到指定容器中
        // transaction.addToBackStack(null);  //设置fragment返回栈
         transaction.commit();       //提交事务
     }

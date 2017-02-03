@@ -2,6 +2,7 @@ package com.example.zhuyu.yuweather;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -64,29 +65,18 @@ public class AreaFragment extends Fragment {
     private ProgressDialog progressDialog;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_area, container, false);
         activity = (AppCompatActivity) getActivity();
         actionBar = activity.getSupportActionBar();
-        setHasOptionsMenu(true);
-        actionBar.setDisplayHomeAsUpEnabled(false);
+        setHasOptionsMenu(true);//在fragment中监听toolbar必须设置此项
+        actionBar.setDisplayHomeAsUpEnabled(false);//显示toolbar上默认返回按钮
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         adapter=new AreaAdapter(itemList,activity);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
-
-
-
         return view;
-
     }
 
     @Override
@@ -115,6 +105,9 @@ public class AreaFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * okhttp访问服务器的回调响应
+     */
     Callback MyCallBack = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
@@ -125,40 +118,61 @@ public class AreaFragment extends Fragment {
                     closeProgressDialog();
                 }
             });
+            switch (areaLevel){
+                case PRIVINCE_LEVEL:
+                    break;
+                case CITY_LEVEL:
+                    areaLevel=PRIVINCE_LEVEL;
+                    break;
+                case COUNTY_LEVEL:
+                    areaLevel=COUNTY_LEVEL;
+                    break;
+                default:break;
+            }
         }
         @Override
         public void onResponse(Call call, final Response response) throws IOException {
+                    switch (areaLevel) {
+                        case PRIVINCE_LEVEL:
+                            ParseJsonUtil.parseJsontoProvince(response.body().string());//解析响应结果斌保存到数据库
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    queryProvinces();
+                                }
+                            });
+                            break;
+                        case CITY_LEVEL:
+                            ParseJsonUtil.parseJsontoCity(response.body().string(),provinceCode);//解析响应结果斌保存到数据库
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    queryCitys();
+                                }
+                            });
+                            break;
+                        case COUNTY_LEVEL:
+                            ParseJsonUtil.parseJsontoCounty(response.body().string(), cityCode);//解析响应结果斌保存到数据库
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    queryCountys();
+                                }
+                            });
+                            break;
+                        default:
+                    }
 
-            switch (areaLevel) {
-                case PRIVINCE_LEVEL:
-                    ParseJsonUtil.parseJsontoCity(response.body().string(),provinceCode);//解析响应结果斌保存到数据库
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            queryCitys();
-                        }
-                    });
-                    break;
-                case CITY_LEVEL:
-                    ParseJsonUtil.parseJsontoCounty(response.body().string(), cityCode);//解析响应结果斌保存到数据库
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            queryCountys();
-                        }
-                    });
-                    break;
-                case COUNTY_LEVEL:
-                    break;
-                default:
-            }
+
         }
     };
 
     /**
-     * 根据返回的response数据解析并显示到列表上
+     * 查询省列表，并显示到recyclerview上
      */
+
     private void queryProvinces() {
+        areaLevel=PRIVINCE_LEVEL;
         provinceList.clear();
         provinceList = DataSupport.findAll(Province.class);
         Log.d("provinceList.size", provinceList.size() + "");
@@ -168,7 +182,7 @@ public class AreaFragment extends Fragment {
             for (int i = 0; i < provinceList.size(); i++) {
                 itemList.add(provinceList.get(i).getProvinceName());
             }
-            areaLevel=PRIVINCE_LEVEL;
+
             adapter.notifyDataSetChanged();
             closeProgressDialog();
         } else {
@@ -177,18 +191,22 @@ public class AreaFragment extends Fragment {
             showProgressDialog();
         }
     }
-
+    /**
+     * 查询市列表，并显示到recyclerview上
+     */
     private void queryCitys() {
+        areaLevel=CITY_LEVEL;
         Log.d("queryCitys start", "arealevel:"+areaLevel+"");
         cityList.clear();
         cityList = DataSupport.where("provinceId=?", String.valueOf(provinceCode)).find(City.class);
+        Log.d("cityList.size", cityList.size() + "");
         //判断数据库中是否存在数据
         if (cityList.size() > 0) {
             itemList.clear();
             for (int i = 0; i < cityList.size(); i++) {
                 itemList.add(cityList.get(i).getCityName());
             }
-            areaLevel=CITY_LEVEL;
+
             Log.d("queryCitys change", "arealevel:"+areaLevel+"");
             adapter.notifyDataSetChanged();
             actionBar.setDisplayHomeAsUpEnabled(true);//显示toolbar上的返回按钮
@@ -200,16 +218,21 @@ public class AreaFragment extends Fragment {
             showProgressDialog();
         }
     }
+
+    /**
+     * 查询县列表，并显示到recyclerview上
+     */
     private void queryCountys() {
+        areaLevel=COUNTY_LEVEL;
         countyList.clear();
         countyList = DataSupport.where("cityId=?", String.valueOf(cityCode)).find(County.class);
         //判断数据库中是否存在数据
+        Log.d("countyList.size", countyList.size() + "");
         if (countyList.size() > 0) {
             itemList.clear();
             for (int i = 0; i < countyList.size(); i++) {
                 itemList.add(countyList.get(i).getCountyName());
             }
-            areaLevel=COUNTY_LEVEL;
             adapter.notifyDataSetChanged();
             actionBar.setTitle(cityName);
             closeProgressDialog();
@@ -219,7 +242,7 @@ public class AreaFragment extends Fragment {
             HttpUtil.sendOkhttpRequest(areaBaseUrl + "/" + provinceCode + "/" + cityCode, MyCallBack);
         }
     }
-
+    //recyclerview适配器
     class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.ViewHolder> {
         List<String> mItemList;
         private AppCompatActivity activity;
@@ -249,6 +272,21 @@ public class AreaFragment extends Fragment {
                     cityCode = cityList.get(position).getCityCode();
                     cityName = cityList.get(position).getCityName();
                     queryCountys();
+                } else if (areaLevel==COUNTY_LEVEL){
+                   if (activity instanceof MainActivity) {
+                       String weatherId = countyList.get(position).getWeatherId();
+                       Intent intent = new Intent(activity, WeatherActivity.class);
+                       intent.putExtra("weatherId", weatherId);
+                       startActivity(intent);
+                       activity.finish();
+                   } else if (activity instanceof WeatherActivity){
+                       String weatherId = countyList.get(position).getWeatherId();
+                       ((WeatherActivity) activity).weatherId=weatherId;
+                       ((WeatherActivity) activity).drawerLayout.closeDrawers();
+                       ((WeatherActivity) activity).queryWeather(weatherId);
+                       ((WeatherActivity) activity).swipeRefresh.setRefreshing(true);
+                   }
+
                 }
             }
         }

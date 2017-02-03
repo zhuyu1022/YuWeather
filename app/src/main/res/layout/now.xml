@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/degreeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="9°"
+        android:textColor="@color/colorText"
+        android:textSize="100sp" />
+
+    <TextView
+        android:id="@+id/weatherInfoText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="晴"
+        android:textSize="30sp"
+        android:textColor="@color/colorText"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/updatetimeText"
+        android:layout_gravity="end"
+        android:textSize="16sp"
+        android:layout_alignBottom="@+id/citynameText"
+        android:text="hahaha"
+        android:textColor="@color/colorText"/>
+
+</LinearLayout>
